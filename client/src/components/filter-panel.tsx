@@ -10,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface FilterValues {
   query: string;
@@ -82,10 +83,21 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
     setShowMobileFilters(false);
   };
 
-  const availableBrands = [
-    'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Chevrolet', 
-    'Volkswagen', 'Hyundai', 'Nissan', 'Porsche', 'Lexus', 'Kia'
-  ];
+  // Fetch car brands from API
+  const { 
+    data: carBrands, 
+    isLoading: isBrandsLoading 
+  } = useQuery<string[]>({
+    queryKey: ['/api/car-brands'],
+  });
+
+  // Fetch car body types from API
+  const { 
+    data: carTypes, 
+    isLoading: isTypesLoading 
+  } = useQuery<string[]>({
+    queryKey: ['/api/car-types'],
+  });
 
   return (
     <aside id="filterPanel" className={`${showMobileFilters ? 'block' : 'hidden'} md:block w-full md:w-64 shrink-0 space-y-6`}>
@@ -114,9 +126,16 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all_brands">All Brands</SelectItem>
-                {availableBrands.map(brand => (
-                  <SelectItem key={brand} value={brand}>{brand}</SelectItem>
-                ))}
+                {isBrandsLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <span>Loading brands...</span>
+                  </div>
+                ) : (
+                  carBrands?.map(brand => (
+                    <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -190,16 +209,25 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
         <div className="mb-4">
           <Label className="block text-sm font-medium mb-2">Body Type</Label>
           <div className="space-y-2">
-            {['Sedan', 'SUV', 'Hatchback', 'Convertible', 'Coupe', 'Pickup'].map(bodyType => (
-              <div key={bodyType} className="flex items-center">
-                <Checkbox 
-                  id={`body-${bodyType}`}
-                  checked={localFilters.bodyTypes.includes(bodyType)}
-                  onCheckedChange={(checked) => handleCheckboxChange('bodyTypes', bodyType, checked as boolean)}
-                />
-                <Label htmlFor={`body-${bodyType}`} className="ml-2 text-sm">{bodyType}</Label>
+            {isTypesLoading ? (
+              <div className="flex items-center py-2">
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <span className="text-sm">Loading types...</span>
               </div>
-            ))}
+            ) : (
+              carTypes?.map(bodyType => (
+                <div key={bodyType} className="flex items-center">
+                  <Checkbox 
+                    id={`body-${bodyType}`}
+                    checked={localFilters.bodyTypes.includes(bodyType)}
+                    onCheckedChange={(checked) => handleCheckboxChange('bodyTypes', bodyType, checked as boolean)}
+                  />
+                  <Label htmlFor={`body-${bodyType}`} className="ml-2 text-sm">
+                    {bodyType.charAt(0).toUpperCase() + bodyType.slice(1)}
+                  </Label>
+                </div>
+              ))
+            )}
           </div>
         </div>
         

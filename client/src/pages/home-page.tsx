@@ -52,14 +52,15 @@ export default function HomePage() {
     return `/api/cars/search?${params.toString()}`;
   };
 
+  // Explicitly type the result as Car[] for better type safety
   const {
-    data: carsData,
+    data: carsData = [], // Default to empty array to avoid null/undefined checks
     isLoading,
     error,
     isFetching,
   } = useQuery<Car[]>({
     queryKey: [buildQueryString()],
-    keepPreviousData: true,
+    placeholderData: (prev) => prev, // This replaces keepPreviousData in v5
   });
 
   const handleSearch = useCallback((query: string) => {
