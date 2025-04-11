@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
+import * as carApi from "./car-api";
+import { log } from "./vite";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -14,30 +16,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
       
-      const cars = await storage.getCars(limit, offset);
+      // Use real car API instead of storage
+      const cars = await carApi.searchCars({ limit, offset });
       res.json(cars);
     } catch (error) {
-      console.error("Error fetching cars:", error);
+      log("Error fetching cars: " + (error as Error).message, "api");
       res.status(500).json({ message: "Failed to fetch cars" });
     }
   });
 
-  app.get("/api/cars/:id", async (req, res) => {
+  // Get car brands
+  app.get("/api/car-brands", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const car = await storage.getCarById(id);
-      
-      if (!car) {
-        return res.status(404).json({ message: "Car not found" });
-      }
-      
-      res.json(car);
+      const brands = await carApi.getCarBrands();
+      res.json(brands);
     } catch (error) {
-      console.error("Error fetching car:", error);
-      res.status(500).json({ message: "Failed to fetch car" });
+      log("Error fetching car brands: " + (error as Error).message, "api");
+      res.status(500).json({ message: "Failed to fetch car brands" });
     }
   });
 
+  // Get car body types
+  app.get("/api/car-types", async (req, res) => {
+    try {
+      const types = await carApi.getCarTypes();
+      res.json(types);
+    } catch (error) {
+      log("Error fetching car types: " + (error as Error).message, "api");
+      res.status(500).json({ message: "Failed to fetch car types" });
+    }
+  });
+
+  // This route needs to be defined before the /api/cars/:id route to avoid conflict
   app.get("/api/cars/search", async (req, res) => {
     try {
       const searchSchema = z.object({
@@ -54,38 +64,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         offset: z.number().min(0).optional(),
       });
       
-      const params = searchSchema.parse({
-        query: req.query.query,
+      // Extract and process query parameters
+      const params = {
+        query: req.query.query as string | undefined,
         brands: req.query.brands ? (req.query.brands as string).split(',') : undefined,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
         fuelTypes: req.query.fuelTypes ? (req.query.fuelTypes as string).split(',') : undefined,
         seatingCapacity: req.query.seatingCapacity ? Number(req.query.seatingCapacity) : undefined,
         bodyTypes: req.query.bodyTypes ? (req.query.bodyTypes as string).split(',') : undefined,
-        sortBy: req.query.sortBy as string,
-        sortOrder: req.query.sortOrder as 'asc' | 'desc',
+        sortBy: req.query.sortBy as string | undefined,
+        sortOrder: req.query.sortOrder as 'asc' | 'desc' | undefined,
         limit: req.query.limit ? Number(req.query.limit) : 10,
         offset: req.query.offset ? Number(req.query.offset) : 0,
-      });
+      };
       
-      const cars = await storage.searchCars(
-        params.query,
-        params.brands,
-        params.minPrice,
-        params.maxPrice,
-        params.fuelTypes,
-        params.seatingCapacity,
-        params.bodyTypes,
-        params.sortBy,
-        params.sortOrder,
-        params.limit,
-        params.offset
-      );
+      // Use real car API
+      const cars = await carApi.searchCars(params);
       
       res.json(cars);
     } catch (error) {
-      console.error("Error searching cars:", error);
+      log("Error searching cars: " + (error as Error).message, "api");
       res.status(500).json({ message: "Failed to search cars" });
+    }
+  });
+
+  app.get("/api/cars/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const car = await carApi.getCarById(id);
+      
+      if (!car) {
+        return res.status(404).json({ message: "Car not found" });
+      }
+      
+      res.json(car);
+    } catch (error) {
+      log("Error fetching car: " + (error as Error).message, "api");
+      res.status(500).json({ message: "Failed to fetch car" });
     }
   });
 

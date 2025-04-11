@@ -48,7 +48,7 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-1">
           <Link href="/">
-            <a className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1 cursor-pointer">
               <svg className="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 8L14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -56,7 +56,7 @@ export default function Header() {
                 <path d="M11 12V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span className="text-xl font-semibold tracking-tight">Brand<span className="text-primary">Kiln</span></span>
-            </a>
+            </div>
           </Link>
         </div>
         
