@@ -1,0 +1,182 @@
+Project Prompt: Brand Kiln – Replit AI-Powered Car Finder
+By Danish Khan
+
+Overview & Purpose
+Brand Kiln is a sleek, lightweight, and production-ready car finder web app designed for real-life use. It dynamically searches, suggests, and displays car information—complete with smart auto-suggestions, infinite scrolling, and robust user authentication. The app extracts car images and details primarily using a local FastText model (with a fallback to the OpenRouter API) without leaving any AI-related traces in the code. When a user attempts to “buy” a car, a humorous message appears:
+
+"Manas Dewan Don't Buy Haha"
+
+Key Points:
+
+No demo website: Build a fully functional, production-ready application.
+
+No AI comments or metadata: All intelligent features are implemented without any AI-related marks.
+
+Production-ready authentication: Fully functional, bug-free login and registration with all issues resolved.
+
+Enhanced contrast & accessibility: Ensure all text, outlines, and buttons have optimum contrast in both dark and light themes.
+
+Dynamic car suggestions: For example, if a user types “musta,” the app should suggest “Mustang” along with corresponding models and load relevant images.
+
+Infinite scrolling: Initially load 10 cars and load more as the user scrolls down.
+
+Bug-free & fully debugged: Address possible errors in authentication, search, infinite scrolling, etc.
+
+Deployable on Railway.app: Follow best practices for production deployment, with proper environment variable management.
+
+Core Functional Requirements
+Car Search, Filtering, and Suggestions
+
+Filters: Allow users to search by brand, price range, fuel type, seating capacity, etc.
+
+Smart Suggestions: Implement an auto-suggestion mechanism (e.g., typing “musta” suggests “Mustang” with appropriate models).
+
+Infinite Scrolling: Load 10 car listings initially and dynamically load more as the user scrolls down.
+
+Sorting: Provide sorting functionality by price (low-to-high and high-to-low).
+
+Car Details and Wishlist
+
+Car Cards: Display high-quality images, car model names, and key specifications.
+
+Wishlist: Enable users to add cars to a wishlist stored in LocalStorage.
+
+Real-Time UI: Dynamically update the UI as users interact (no full page reloads).
+
+User Authentication & Registration
+
+Robust Login & Registration: Provide full, bug-free authentication with proper form validations, error handling, and password security.
+
+Production Quality: Make sure authentication mimics real-life use with no demo credentials or placeholder flows.
+
+Advanced Image & Data Extraction
+
+Local FastText Model: Use as the primary engine for extracting car details and images.
+
+Fallback Mechanism: Seamlessly switch to the OpenRouter API if the local model fails—all without AI-related identifiers.
+
+Data Scraping: Efficiently scrape and display high-quality images and detailed car information.
+
+Chat Support
+
+Session-Aware Chat: Integrate a chat system using the OpenRouter API that retains session context (without long-term history).
+
+Sleek and Modern UI: The chat interface should be interactive and smooth, with no visible AI traces.
+
+User Interaction & Tracking
+
+Search History: Save recent search queries and interactions in LocalStorage (similar to YouTube’s search tracking).
+
+Animations: Add advanced animations for hovers, page transitions, and loading spinners.
+
+Improved Themes & Contrast:
+
+Dark Mode: Use white outlines and clear button/text colors for high visibility on dark backgrounds.
+
+Light Mode: Use dark outlines and text/icons on light backgrounds.
+
+Ensure all elements meet accessibility standards.
+
+Purchase Interaction (Easter Egg)
+
+When a user clicks to “buy” a car, immediately display:
+
+"Manas Dewan Don't Buy Haha"
+
+Performance, Debugging & Error Handling
+
+Optimizations: Use debouncing for search inputs, lazy load images, and optimize API calls.
+
+Comprehensive Error Handling: Provide clear error messages and fallback UI for any process failures (search, authentication, data extraction, etc.).
+
+Bug Fixing: Prior to deployment, ensure that all potential errors (login, registration, infinite scrolling, search suggestions) are resolved.
+
+Tech Stack & Implementation Details
+Frontend:
+Framework: Next.js (preferred) or React.js
+
+Styling: TailwindCSS for a responsive, modern UI
+
+State Management: useState, useEffect (Redux optional)
+
+Backend / API Handling:
+Server-Side: Use Next.js API routes (or a custom backend) for handling search/filter queries, user authentication, and data processing.
+
+Asynchronous Operations: Ensure all API calls are asynchronous with proper loading and error states.
+
+Database & Data Storage:
+Database: PostgreSQL
+
+Connection String:
+
+bash
+Copy
+Edit
+postgres://postgres:eWwjvB9rdjnxFf3@vntfxfsrheumexkmzfjo.db.ap-south-1.nhost.run:5432/vntfxfsrheumexkmzfjo
+Security: Use environment variables to secure sensitive data. Do not commit credentials in the repo.
+
+LocalStorage:
+
+Save wishlist items and search history locally.
+
+Intelligent Features (Hidden, No AI Traces):
+Primary Engine: Local FastText model for image and car info extraction.
+
+Fallback: Automatic switch to OpenRouter API if needed.
+
+Hidden Implementation: No AI comments, logs, or variable names exposing AI details.
+
+Chat Support:
+Chat Module: Session-based chat using OpenRouter API to handle user queries with context retention (without persistent history).
+
+Clean UI: The chat interface must integrate seamlessly with the app’s design.
+
+Deployment:
+Platform: Railway.app (exclusively—do not deploy on Vercel/Netlify)
+
+Environment Variables: Use a .env file for secure configuration.
+
+.env File Configuration
+Create a .env file at the root of your project. Example contents:
+
+ini
+Copy
+Edit
+# Database Credentials
+DB_URL=postgres://postgres:eWwjvB9rdjnxFf3@vntfxfsrheumexkmzfjo.db.ap-south-1.nhost.run:5432/vntfxfsrheumexkmzfjo
+
+# OpenRouter API Key (if using as fallback for chat or extraction)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# Other environment variables (e.g., production settings, JWT secret, etc.)
+JWT_SECRET=your_jwt_secret_here
+NODE_ENV=production
+Note: Make sure to add .env to your .gitignore file to prevent sensitive data from being committed.
+
+Final Developer Checklist
+ Brand Kiln by Danish Khan: All references must clearly state the project/company name.
+
+ No Demo Website: Do not include any demo pages or placeholder content; the application must be production-ready.
+
+ Improved Contrast & Accessibility: Verify that text, button outlines, and UI elements have optimal contrast in both dark and light themes.
+
+ Smart Car Suggestions: Implement dynamic suggestions (e.g., “musta” suggests “Mustang”) with corresponding images.
+
+ Infinite Scrolling: Load an initial set of 10 car listings; dynamically load more as the user scrolls.
+
+ User Authentication: Fix and fully implement production-grade login and registration systems.
+
+ Chat Support: Integrate session-aware chat using the OpenRouter API without any persistent history.
+
+ Image & Data Extraction: Use local FastText as primary with OpenRouter API fallback, ensuring no AI metadata.
+
+ Wishlist & Tracking: Utilize LocalStorage for saving wishlist items and search histories.
+
+ Purchase Interaction: Display the “Manas Dewan Don't Buy Haha” message on purchase attempts.
+
+ Performance & Debugging: Optimize debouncing, lazy loading, and fix all potential errors in the app.
+
+ Deployment: Package and deploy the production-ready application on Railway.app with a detailed README.md.
+
+ Environment Variables: Secure sensitive keys and strings through a properly configured .env file.
+
