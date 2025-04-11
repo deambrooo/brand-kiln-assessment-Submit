@@ -98,13 +98,15 @@ export default function HomePage() {
     }
   }, [carsData]);
 
-  if (error) {
-    toast({
-      title: "Error",
-      description: "Failed to load cars. Please try again later.",
-      variant: "destructive",
-    });
-  }
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load cars. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   const handleViewDetails = (car: Car) => {
     setSelectedCar(car);

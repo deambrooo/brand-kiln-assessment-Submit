@@ -100,9 +100,9 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
           <Label className="block text-sm font-medium mb-2">Brand</Label>
           <div className="relative">
             <Select
-              value={localFilters.brands.length === 1 ? localFilters.brands[0] : ""}
+              value={localFilters.brands.length === 1 ? localFilters.brands[0] : "all_brands"}
               onValueChange={(value) => {
-                if (value === "") {
+                if (value === "all_brands") {
                   handleInputChange('brands', []);
                 } else {
                   handleInputChange('brands', [value]);
@@ -113,7 +113,7 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
                 <SelectValue placeholder="All Brands" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Brands</SelectItem>
+                <SelectItem value="all_brands">All Brands</SelectItem>
                 {availableBrands.map(brand => (
                   <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                 ))}
@@ -166,16 +166,16 @@ export default function FilterPanel({ filters, onFilterChange }: FilterPanelProp
           <Label className="block text-sm font-medium mb-2">Seating Capacity</Label>
           <div className="relative">
             <Select
-              value={localFilters.seatingCapacity?.toString() || ""}
+              value={localFilters.seatingCapacity?.toString() || "any_seating"}
               onValueChange={(value) => {
-                handleInputChange('seatingCapacity', value ? Number(value) : undefined);
+                handleInputChange('seatingCapacity', value === "any_seating" ? undefined : Number(value));
               }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Any" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any_seating">Any</SelectItem>
                 <SelectItem value="2">2 Seater</SelectItem>
                 <SelectItem value="4">4 Seater</SelectItem>
                 <SelectItem value="5">5 Seater</SelectItem>
