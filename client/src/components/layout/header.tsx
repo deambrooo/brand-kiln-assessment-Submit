@@ -11,16 +11,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import SearchBar from '@/components/search-bar';
-import { Sun, Moon, Heart, ChevronDown, LogOut } from 'lucide-react';
+import { Sun, Moon, Heart, ChevronDown, LogOut, Trash2 } from 'lucide-react';
 
 export default function Header() {
   const [location, navigate] = useLocation();
-  const { user, logoutMutation } = useAuth();
+  const { user, logoutMutation, deleteAccountMutation } = useAuth();
   const { wishlist } = useWishlist();
   const { theme, setTheme } = useTheme();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleSearch = (query: string) => {
     navigate(`/?query=${encodeURIComponent(query)}`);
@@ -28,6 +39,12 @@ export default function Header() {
 
   const handleLogout = () => {
     logoutMutation.mutate();
+  };
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate();
+    setShowDeleteDialog(false);
+    navigate('/');
   };
 
   const toggleMobileSearch = () => {
@@ -122,6 +139,10 @@ export default function Header() {
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive hover:text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>Delete Account</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

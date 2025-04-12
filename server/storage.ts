@@ -63,6 +63,19 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return user;
   }
+  
+  async deleteUser(id: number): Promise<boolean> {
+    try {
+      const result = await db
+        .delete(users)
+        .where(eq(users.id, id))
+        .returning();
+      return result.length > 0;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return false;
+    }
+  }
 
   // Car methods
   async getCars(limit: number = 10, offset: number = 0): Promise<Car[]> {
@@ -205,6 +218,13 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+  
+  async deleteUser(id: number): Promise<boolean> {
+    if (this.users.has(id)) {
+      return this.users.delete(id);
+    }
+    return false;
   }
 
   // Car methods
