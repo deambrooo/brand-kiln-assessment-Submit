@@ -55,21 +55,56 @@ SESSION_SECRET=a_secure_random_string
 
 This application is designed to be easily deployed on Railway.app:
 
-1. Create a new project on Railway.app
-2. Connect your GitHub repository
-3. Add a PostgreSQL database plugin to your project
-4. Set up the environment variables (Railway will automatically set up most of the PostgreSQL variables)
-5. Add the following additional environment variables:
-   - `SESSION_SECRET` (generate a secure random string)
-   - Optionally add car API credentials if available
-6. Deploy the application
-7. Railway will automatically build and deploy the application
+1. **Create a new project on Railway.app**
+   - Go to [Railway.app](https://railway.app/)
+   - Sign in with your GitHub account
+   - Click "New Project" and select "Deploy from GitHub repo"
+
+2. **Connect your GitHub repository**
+   - Select the repository containing this project
+   - Railway will automatically detect the project structure
+
+3. **Add a PostgreSQL database plugin to your project**
+   - Click "New" in your project dashboard
+   - Select "Database" and then "PostgreSQL"
+   - Railway will provision a PostgreSQL database
+
+4. **Set up environment variables**
+   - Railway will automatically set up the following PostgreSQL variables:
+     - `DATABASE_URL`
+     - `PGHOST`
+     - `PGPORT`
+     - `PGUSER`
+     - `PGPASSWORD`
+     - `PGDATABASE`
+   
+   - Add the following additional environment variables:
+     - `SESSION_SECRET` (generate a secure random string, e.g., `openssl rand -hex 32`)
+     - `NODE_ENV` = `production`
+     - Optionally add car API credentials if available:
+       - `CAR_API_KEY`
+       - `CAR_API_SECRET`
+       - `CAR_API_TOKEN`
+
+5. **Deploy the application**
+   - Railway will automatically detect the `package.json` and build the application
+   - It will use the `npm start` command as defined in our Procfile
+
+6. **Database setup**
+   - The first deployment will automatically create and set up the database tables
+   - No manual migration commands needed thanks to Drizzle ORM
+
+7. **Access your deployed application**
+   - Once deployed, Railway will provide a URL for your application
+   - You can also set up a custom domain in Railway's settings
 
 ### Important Deployment Notes
 
 - The application uses a comprehensive fallback database of cars if the external car API is not available or configured
+- The app includes built-in car data from over 40 manufacturers and hundreds of models from around the world
 - Database migrations will be automatically handled by Drizzle ORM
 - The application is configured to work with Railway's built-in PostgreSQL plugin
+- For production use, it's recommended to set a strong SESSION_SECRET value
 
 ## Car Data Source
 
