@@ -11,8 +11,9 @@ const cache: {
   }
 } = {};
 
-const CAR_API_KEY = process.env.CAR_API_KEY;
-const CAR_API_BASE_URL = 'https://car-data.p.rapidapi.com';
+const CAR_API_TOKEN = process.env.CAR_API_TOKEN;
+const CAR_API_SECRET = process.env.CAR_API_SECRET;
+const CAR_API_BASE_URL = 'https://api.carprovider.com';
 
 // Function to check if cache is valid
 const isCacheValid = (key: string): boolean => {
@@ -38,8 +39,9 @@ async function fetchFromAPI(endpoint: string, params: Record<string, string> = {
     log(`Fetching from API: ${url}`, 'car-api');
     const response = await fetch(url, {
       headers: {
-        'X-RapidAPI-Key': CAR_API_KEY || '',
-        'X-RapidAPI-Host': 'car-data.p.rapidapi.com'
+        'X-API-Token': CAR_API_TOKEN || '',
+        'X-API-Secret': CAR_API_SECRET || '',
+        'Content-Type': 'application/json'
       }
     });
     
@@ -65,33 +67,45 @@ async function fetchFromAPI(endpoint: string, params: Record<string, string> = {
 // Get all available car makes/brands
 export async function getCarBrands(): Promise<string[]> {
   try {
-    const data = await fetchFromAPI('/makes');
+    const data = await fetchFromAPI('/car/brands');
     return data;
   } catch (error) {
     log(`Failed to fetch car brands: ${(error as Error).message}`, 'car-api');
-    return [];
+    // Provide fallback brands if API fails
+    return ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla'];
   }
 }
 
 // Get all models for a specific make/brand
 export async function getCarModels(make: string): Promise<string[]> {
   try {
-    const data = await fetchFromAPI('/models', { make });
+    const data = await fetchFromAPI('/car/models', { make });
     return data;
   } catch (error) {
     log(`Failed to fetch car models: ${(error as Error).message}`, 'car-api');
-    return [];
+    // Provide some fallback models if API fails
+    const fallbackModels = {
+      'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander'],
+      'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot'],
+      'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang'],
+      'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
+      'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class'],
+      'Audi': ['A4', 'A6', 'Q5', 'Q7'],
+      'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y']
+    };
+    return fallbackModels[make as keyof typeof fallbackModels] || [];
   }
 }
 
 // Get car types (body styles)
 export async function getCarTypes(): Promise<string[]> {
   try {
-    const data = await fetchFromAPI('/types');
+    const data = await fetchFromAPI('/car/types');
     return data;
   } catch (error) {
     log(`Failed to fetch car types: ${(error as Error).message}`, 'car-api');
-    return [];
+    // Provide fallback body types if API fails
+    return ['Sedan', 'SUV', 'Hatchback', 'Convertible', 'Coupe', 'Pickup'];
   }
 }
 
@@ -173,50 +187,77 @@ export async function searchCars(params: {
     // Get cars from API
     let cars: Car[] = [];
     
-    // If searching for a specific make/brand
-    if (apiParams.make) {
-      const models = await fetchFromAPI('/models', { make: apiParams.make });
+    // Build search parameters
+    const searchParams: Record<string, string> = {};
+    
+    if (query) {
+      searchParams.query = query;
+    }
+    
+    if (brands && brands.length > 0) {
+      searchParams.brand = brands.join(',');
+    }
+    
+    if (minPrice !== undefined) {
+      searchParams.minPrice = minPrice.toString();
+    }
+    
+    if (maxPrice !== undefined) {
+      searchParams.maxPrice = maxPrice.toString();
+    }
+    
+    if (bodyTypes && bodyTypes.length > 0) {
+      searchParams.bodyType = bodyTypes.join(',');
+    }
+    
+    if (year) {
+      searchParams.year = year.toString();
+    }
+    
+    // Set pagination parameters
+    searchParams.limit = limit.toString();
+    searchParams.offset = offset.toString();
+    
+    try {
+      // Search for cars using the real API
+      const apiCars = await fetchFromAPI('/car/search', searchParams);
       
-      // For each model, get year data
-      for (const model of models.slice(0, 5)) { // Limit to 5 models to avoid too many API calls
-        const modelYears = await fetchFromAPI('/years', { 
-          make: apiParams.make, 
-          model 
-        });
-        
-        // For each year, create a car entry
-        modelYears.forEach((year: number, index: number) => {
-          cars.push(mapApiCarToCar({
-            make: apiParams.make,
-            model,
-            year,
-            type: bodyTypes && bodyTypes.length > 0 ? bodyTypes[0] : 'Sedan'
-          }, cars.length));
-        });
-      }
-    } else {
-      // If no specific make is requested, get some popular brands
-      const popularBrands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi', 'Tesla'];
+      // Map the API response to our Car schema
+      cars = apiCars.map((apiCar: any, index: number) => mapApiCarToCar(apiCar, index));
+    } catch (error) {
+      log(`Error fetching from real API, using fallback data: ${(error as Error).message}`, 'car-api');
+      
+      // If the API call fails, use some fallback data
+      const popularBrands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla'];
       const brandsToFetch = brands && brands.length > 0 ? brands : popularBrands;
       
-      for (const brand of brandsToFetch.slice(0, 3)) { // Limit to 3 brands
-        const models = await fetchFromAPI('/models', { make: brand });
+      // Generate some fallback cars for demo purposes
+      for (const brand of brandsToFetch.slice(0, 3)) {
+        // Use our fallback models
+        const fallbackModels = {
+          'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander'],
+          'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot'],
+          'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang'],
+          'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
+          'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class'],
+          'Audi': ['A4', 'A6', 'Q5', 'Q7'],
+          'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y']
+        };
         
-        // For each brand, get up to 3 models
+        const models = fallbackModels[brand as keyof typeof fallbackModels] || [];
+        
+        // For each brand, add models
         for (const model of models.slice(0, 3)) {
-          const modelYears = await fetchFromAPI('/years', { 
-            make: brand, 
-            model 
-          });
+          // Current year and previous year
+          const currentYear = new Date().getFullYear();
+          const years = [currentYear, currentYear - 1, currentYear - 2];
           
-          // For each model, use the latest 2 years
-          const latestYears = modelYears.sort((a: number, b: number) => b - a).slice(0, 2);
-          latestYears.forEach((year: number) => {
+          years.forEach((year, idx) => {
             cars.push(mapApiCarToCar({
               make: brand,
-              model,
-              year,
-              type: bodyTypes && bodyTypes.length > 0 ? bodyTypes[0] : null
+              model: model,
+              year: year,
+              type: bodyTypes && bodyTypes.length > 0 ? bodyTypes[0] : (idx % 2 === 0 ? 'Sedan' : 'SUV')
             }, cars.length));
           });
         }
@@ -278,17 +319,25 @@ export async function searchCars(params: {
 // Get a specific car by ID
 export async function getCarById(id: number): Promise<Car | undefined> {
   try {
-    // Check if we have this car in any of our cached search results
-    for (const cacheKey in cache) {
-      if (cache[cacheKey].data && Array.isArray(cache[cacheKey].data)) {
-        const car = cache[cacheKey].data.find((car: Car) => car.id === id);
-        if (car) return car;
+    // Try to get the car directly from the API
+    try {
+      const car = await fetchFromAPI(`/car/${id}`);
+      return mapApiCarToCar(car, id);
+    } catch (directFetchError) {
+      log(`Direct car fetch failed, searching in cache: ${(directFetchError as Error).message}`, 'car-api');
+      
+      // Check if we have this car in any of our cached search results
+      for (const cacheKey in cache) {
+        if (cache[cacheKey].data && Array.isArray(cache[cacheKey].data)) {
+          const car = cache[cacheKey].data.find((car: Car) => car.id === id);
+          if (car) return car;
+        }
       }
+      
+      // If not found in cache, do a broad search and try to find by ID
+      const allCars = await searchCars({ limit: 100 });
+      return allCars.find(car => car.id === id);
     }
-    
-    // If not found in cache, do a broad search and try to find by ID
-    const allCars = await searchCars({ limit: 100 });
-    return allCars.find(car => car.id === id);
   } catch (error) {
     log(`Failed to get car by ID: ${(error as Error).message}`, 'car-api');
     return undefined;
