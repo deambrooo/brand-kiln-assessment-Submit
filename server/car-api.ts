@@ -72,7 +72,18 @@ export async function getCarBrands(): Promise<string[]> {
   } catch (error) {
     log(`Failed to fetch car brands: ${(error as Error).message}`, 'car-api');
     // Provide fallback brands if API fails
-    return ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Nissan', 'Suzuki', 'Hyundai', 'Kia', 'Chevrolet', 'Lexus', 'Acura'];
+    return [
+      // Japanese brands
+      'Toyota', 'Honda', 'Nissan', 'Suzuki', 'Lexus', 'Acura', 'Mazda', 'Mitsubishi', 'Subaru', 'Infiniti', 
+      // US brands
+      'Ford', 'Chevrolet', 'Cadillac', 'Jeep', 'Dodge', 'Chrysler', 'GMC', 'Buick', 'Lincoln', 'Tesla',
+      // European brands
+      'BMW', 'Mercedes', 'Audi', 'Volkswagen', 'Porsche', 'Jaguar', 'Land Rover', 'Volvo', 'Ferrari', 'Lamborghini',
+      // Korean brands
+      'Hyundai', 'Kia', 'Genesis',
+      // Indian brands
+      'Mahindra', 'Tata', 'Maruti Suzuki', 'Force Motors', 'Hindustan Motors'
+    ];
   }
 }
 
@@ -140,21 +151,54 @@ function mapApiCarToCar(apiCar: any, index: number): Car {
   
   // Generate a reliable image URL based on car make and model
   // Using specific images that are more reliable than random unsplash searches
-  const imageUrls = {
+  const imageUrls: Record<string, string> = {
+    // Japanese brands
     'Toyota': 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg',
     'Honda': 'https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg',
+    'Nissan': 'https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg',
+    'Suzuki': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    'Lexus': 'https://images.pexels.com/photos/248687/pexels-photo-248687.jpeg',
+    'Acura': 'https://images.pexels.com/photos/248747/pexels-photo-248747.jpeg',
+    'Mazda': 'https://images.pexels.com/photos/1082655/pexels-photo-1082655.jpeg',
+    'Mitsubishi': 'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg',
+    'Subaru': 'https://images.pexels.com/photos/707046/pexels-photo-707046.jpeg',
+    'Infiniti': 'https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg',
+    
+    // US brands
     'Ford': 'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg',
+    'Chevrolet': 'https://images.pexels.com/photos/337909/pexels-photo-337909.jpeg',
+    'Tesla': 'https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg',
+    'Cadillac': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    'Jeep': 'https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg',
+    'Dodge': 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg',
+    'Chrysler': 'https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg',
+    'GMC': 'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg',
+    'Buick': 'https://images.pexels.com/photos/35967/mini-cooper-auto-model-vehicle.jpg',
+    'Lincoln': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    
+    // European brands
     'BMW': 'https://images.pexels.com/photos/100656/pexels-photo-100656.jpeg',
     'Mercedes': 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
     'Audi': 'https://images.pexels.com/photos/244206/pexels-photo-244206.jpeg',
-    'Tesla': 'https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg',
-    'Nissan': 'https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg',
-    'Suzuki': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    'Volkswagen': 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg',
+    'Porsche': 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg',
+    'Jaguar': 'https://images.pexels.com/photos/136872/pexels-photo-136872.jpeg',
+    'Land Rover': 'https://images.pexels.com/photos/1638459/pexels-photo-1638459.jpeg',
+    'Volvo': 'https://images.pexels.com/photos/1335077/pexels-photo-1335077.jpeg',
+    'Ferrari': 'https://images.pexels.com/photos/337909/pexels-photo-337909.jpeg',
+    'Lamborghini': 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg',
+    
+    // Korean brands
     'Hyundai': 'https://images.pexels.com/photos/627678/pexels-photo-627678.jpeg',
     'Kia': 'https://images.pexels.com/photos/1035108/pexels-photo-1035108.jpeg',
-    'Chevrolet': 'https://images.pexels.com/photos/337909/pexels-photo-337909.jpeg',
-    'Lexus': 'https://images.pexels.com/photos/248687/pexels-photo-248687.jpeg',
-    'Acura': 'https://images.pexels.com/photos/248747/pexels-photo-248747.jpeg'
+    'Genesis': 'https://images.pexels.com/photos/248747/pexels-photo-248747.jpeg',
+    
+    // Indian brands
+    'Mahindra': 'https://images.pexels.com/photos/1638459/pexels-photo-1638459.jpeg',
+    'Tata': 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg',
+    'Maruti Suzuki': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    'Force Motors': 'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg',
+    'Hindustan Motors': 'https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg'
   };
   
   const imageUrl = imageUrls[apiCar.make as keyof typeof imageUrls] || 'https://images.pexels.com/photos/3166786/pexels-photo-3166786.jpeg';
@@ -253,27 +297,63 @@ export async function searchCars(params: {
       log(`Error fetching from real API, using fallback data: ${(error as Error).message}`, 'car-api');
       
       // If the API call fails, use some fallback data
-      const popularBrands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Nissan', 'Suzuki'];
+      const popularBrands = [
+        'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Nissan', 'Suzuki', 
+        'Mahindra', 'Tata', 'Volkswagen', 'Maruti Suzuki', 'Jeep', 'Kia', 'Hyundai'
+      ];
       const brandsToFetch = brands && brands.length > 0 ? brands : popularBrands;
       
       // Generate some fallback cars for demo purposes
       for (const brand of brandsToFetch) {
         // Use our fallback models - expanded to include more models like Swift and GTR
         const fallbackModels = {
-          'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Supra', 'Land Cruiser', 'Yaris'],
-          'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Fit', 'HR-V', 'Odyssey'],
-          'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang', 'Focus', 'Ranger', 'Bronco'],
-          'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3', 'M5', 'i8'],
-          'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class', 'AMG GT', 'G-Wagon', 'EQS'],
-          'Audi': ['A4', 'A6', 'Q5', 'Q7', 'R8', 'e-tron', 'TT'],
-          'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck', 'Roadster'],
-          'Nissan': ['Altima', 'Maxima', 'Rogue', 'Pathfinder', 'GTR', '370Z', 'Leaf'],
-          'Suzuki': ['Swift', 'Vitara', 'Jimny', 'S-Cross', 'Ignis', 'Baleno'],
-          'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona'],
-          'Kia': ['Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride', 'Soul'],
-          'Chevrolet': ['Malibu', 'Impala', 'Equinox', 'Tahoe', 'Silverado', 'Corvette', 'Camaro'],
-          'Lexus': ['ES', 'IS', 'RX', 'GX', 'LX', 'LC', 'LS'],
-          'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX']
+          // Japanese brands
+          'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Supra', 'Land Cruiser', 'Yaris', 'Prius', 'Avalon', 'Venza', 'Sienna'],
+          'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Fit', 'HR-V', 'Odyssey', 'Insight', 'Ridgeline', 'Passport'],
+          'Nissan': ['Altima', 'Maxima', 'Rogue', 'Pathfinder', 'GTR', '370Z', 'Leaf', 'Sentra', 'Murano', 'Kicks', 'Frontier', 'Titan'],
+          'Suzuki': ['Swift', 'Vitara', 'Jimny', 'S-Cross', 'Ignis', 'Baleno', 'Ciaz', 'Ertiga', 'XL6', 'Dzire', 'Alto'],
+          'Mazda': ['Mazda3', 'Mazda6', 'CX-3', 'CX-30', 'CX-5', 'CX-9', 'MX-5 Miata', 'RX-8', 'RX-7'],
+          'Mitsubishi': ['Outlander', 'Eclipse Cross', 'Mirage', 'Pajero', 'Lancer', 'Evolution', 'Montero'],
+          'Subaru': ['Impreza', 'Legacy', 'Outback', 'Forester', 'Crosstrek', 'WRX', 'STI', 'BRZ'],
+          'Lexus': ['ES', 'IS', 'LS', 'RX', 'GX', 'LX', 'LC', 'RC', 'NX', 'UX', 'GS'],
+          'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX', 'RSX', 'TSX', 'RLX'],
+          'Infiniti': ['Q50', 'Q60', 'QX50', 'QX60', 'QX80', 'G35', 'G37', 'FX35'],
+          
+          // US brands
+          'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang', 'Focus', 'Ranger', 'Bronco', 'Edge', 'Expedition', 'Maverick', 'EcoSport', 'Mach-E'],
+          'Chevrolet': ['Malibu', 'Impala', 'Equinox', 'Tahoe', 'Silverado', 'Corvette', 'Camaro', 'Suburban', 'Blazer', 'Traverse', 'Colorado', 'Bolt'],
+          'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck', 'Roadster', 'Semi'],
+          'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade', 'CTS', 'ATS', 'SRX', 'Lyriq'],
+          'Jeep': ['Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Renegade', 'Gladiator', 'Wagoneer', 'Commander'],
+          'Dodge': ['Charger', 'Challenger', 'Durango', 'Journey', 'Viper', 'RAM 1500', 'RAM 2500'],
+          'Chrysler': ['300', 'Pacifica', 'Voyager', 'Town & Country', 'PT Cruiser', 'Sebring'],
+          'GMC': ['Sierra', 'Yukon', 'Terrain', 'Acadia', 'Canyon', 'Hummer EV', 'Savana'],
+          'Buick': ['Enclave', 'Encore', 'Envision', 'Regal', 'LaCrosse', 'Verano'],
+          'Lincoln': ['Navigator', 'Aviator', 'Corsair', 'Nautilus', 'MKZ', 'Continental', 'Town Car'],
+          
+          // European brands
+          'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3', 'M5', 'i8', '7 Series', 'X1', 'X7', 'Z4', 'i4', 'iX'],
+          'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class', 'AMG GT', 'G-Wagon', 'EQS', 'GLA', 'GLE', 'CLA', 'A-Class', 'SL'],
+          'Audi': ['A4', 'A6', 'Q5', 'Q7', 'R8', 'e-tron', 'TT', 'A3', 'A8', 'Q3', 'Q8', 'RS6', 'S4'],
+          'Volkswagen': ['Golf', 'Passat', 'Tiguan', 'Atlas', 'Jetta', 'Arteon', 'ID.4', 'Taos', 'Polo', 'Touareg', 'Beetle'],
+          'Porsche': ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan', 'Boxster', 'Cayman', '718'],
+          'Jaguar': ['F-Pace', 'XF', 'XE', 'I-Pace', 'F-Type', 'XJ', 'E-Pace'],
+          'Land Rover': ['Range Rover', 'Discovery', 'Defender', 'Evoque', 'Velar', 'Sport', 'LR4'],
+          'Volvo': ['XC90', 'XC60', 'XC40', 'S60', 'S90', 'V60', 'V90', 'C40'],
+          'Ferrari': ['Roma', 'Portofino', 'SF90', 'F8', '812', '296', 'LaFerrari'],
+          'Lamborghini': ['Aventador', 'Huracan', 'Urus', 'Revuelto', 'Gallardo', 'Murcielago', 'Countach'],
+          
+          // Korean brands
+          'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona', 'Ioniq', 'Venue', 'Accent', 'Veloster', 'Nexo', 'Ioniq 5'],
+          'Kia': ['Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride', 'Soul', 'Stinger', 'Niro', 'Seltos', 'K5', 'EV6', 'Rio'],
+          'Genesis': ['G70', 'G80', 'G90', 'GV70', 'GV80', 'GV60', 'Electrified G80'],
+          
+          // Indian brands
+          'Mahindra': ['XUV700', 'Thar', 'Scorpio', 'XUV300', 'Bolero', 'Marazzo', 'KUV100', 'XUV500', 'TUV300', 'Alturas G4'],
+          'Tata': ['Nexon', 'Harrier', 'Safari', 'Punch', 'Tiago', 'Altroz', 'Tigor', 'Hexa', 'Nano', 'Sierra EV'],
+          'Maruti Suzuki': ['Swift', 'Baleno', 'Brezza', 'Dzire', 'WagonR', 'Alto', 'Ertiga', 'Ciaz', 'S-Presso', 'Celerio', 'Jimny'],
+          'Force Motors': ['Gurkha', 'Trax', 'Traveller', 'Cruiser'],
+          'Hindustan Motors': ['Ambassador', 'Contessa']
         };
         
         const models = fallbackModels[brand as keyof typeof fallbackModels] || [];
@@ -325,14 +405,93 @@ export async function searchCars(params: {
       if (filteredCars.length === 0) {
         // Handle special case searches for specific models
         const specificModels: Record<string, string> = {
+          // Japanese models
           'gtr': 'Nissan GTR',
-          'swift': 'Suzuki Swift',
           'skyline': 'Nissan GTR',
+          'swift': 'Suzuki Swift',
+          'civic': 'Honda Civic',
+          'accord': 'Honda Accord',
+          'corolla': 'Toyota Corolla',
+          'camry': 'Toyota Camry',
+          'supra': 'Toyota Supra',
+          'rx7': 'Mazda RX-7',
+          'miata': 'Mazda MX-5 Miata',
+          'lancer': 'Mitsubishi Lancer',
+          'evo': 'Mitsubishi Evolution',
+          
+          // US models
           'mustang': 'Ford Mustang',
+          'f150': 'Ford F-150',
+          'bronco': 'Ford Bronco',
           'camaro': 'Chevrolet Camaro',
           'corvette': 'Chevrolet Corvette',
-          'civic': 'Honda Civic',
-          'corolla': 'Toyota Corolla'
+          'silverado': 'Chevrolet Silverado',
+          'tesla': 'Tesla Model 3',
+          'model3': 'Tesla Model 3',
+          'models': 'Tesla Model S',
+          'modelx': 'Tesla Model X',
+          'modely': 'Tesla Model Y',
+          'wrangler': 'Jeep Wrangler',
+          'cherokee': 'Jeep Cherokee',
+          'escalade': 'Cadillac Escalade',
+          'challenger': 'Dodge Challenger',
+          'charger': 'Dodge Charger',
+          'ram': 'Dodge RAM 1500',
+          
+          // European models
+          'bmw': 'BMW 3 Series',
+          '911': 'Porsche 911',
+          'cayenne': 'Porsche Cayenne',
+          'benz': 'Mercedes C-Class',
+          'cclass': 'Mercedes C-Class',
+          'eclass': 'Mercedes E-Class',
+          'sclass': 'Mercedes S-Class',
+          'gwagon': 'Mercedes G-Wagon',
+          'a4': 'Audi A4',
+          'r8': 'Audi R8',
+          'tt': 'Audi TT',
+          'golf': 'Volkswagen Golf',
+          'jetta': 'Volkswagen Jetta',
+          'beetle': 'Volkswagen Beetle',
+          'ferrari': 'Ferrari Roma',
+          'lambo': 'Lamborghini Aventador',
+          'range rover': 'Land Rover Range Rover',
+          'discovery': 'Land Rover Discovery',
+          'defender': 'Land Rover Defender',
+          
+          // Korean models
+          'sonata': 'Hyundai Sonata',
+          'elantra': 'Hyundai Elantra',
+          'tucson': 'Hyundai Tucson',
+          'santafe': 'Hyundai Santa Fe',
+          'telluride': 'Kia Telluride',
+          'k5': 'Kia K5',
+          'soul': 'Kia Soul',
+          'sportage': 'Kia Sportage',
+          'g70': 'Genesis G70',
+          'g80': 'Genesis G80',
+          
+          // Indian models
+          'alto': 'Maruti Suzuki Alto',
+          'wagonr': 'Maruti Suzuki WagonR',
+          'brezza': 'Maruti Suzuki Brezza',
+          'dzire': 'Maruti Suzuki Dzire',
+          'baleno': 'Suzuki Baleno',
+          'thar': 'Mahindra Thar',
+          'scorpio': 'Mahindra Scorpio',
+          'xuv700': 'Mahindra XUV700',
+          'xuv500': 'Mahindra XUV500',
+          'xuv300': 'Mahindra XUV300',
+          'bolero': 'Mahindra Bolero',
+          'nexon': 'Tata Nexon',
+          'harrier': 'Tata Harrier',
+          'safari': 'Tata Safari',
+          'tiago': 'Tata Tiago',
+          'nano': 'Tata Nano',
+          'altroz': 'Tata Altroz',
+          'ambassador': 'Hindustan Motors Ambassador',
+          'contessa': 'Hindustan Motors Contessa',
+          'gurkha': 'Force Motors Gurkha'
         };
         
         if (specificModels[searchTerm]) {
