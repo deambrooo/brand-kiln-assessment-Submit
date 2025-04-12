@@ -123,4 +123,24 @@ export function setupAuth(app: Express) {
     const { password, ...userWithoutPassword } = req.user as SelectUser;
     res.json(userWithoutPassword);
   });
+  
+  app.delete("/api/user", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.sendStatus(401);
+      
+      const userId = req.user.id;
+      const success = await storage.deleteUser(userId);
+      
+      if (success) {
+        req.logout((err) => {
+          if (err) return next(err);
+          res.sendStatus(200);
+        });
+      } else {
+        res.status(404).send("User not found");
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
 }

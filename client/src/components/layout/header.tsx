@@ -95,14 +95,14 @@ export default function Header() {
         <div className="flex items-center space-x-3">
           {/* Wishlist */}
           <Link href="/wishlist">
-            <a className="relative p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+            <div className="relative p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
               <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               {wishlist.length > 0 && (
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-primary rounded-full">
                   {wishlist.length}
                 </span>
               )}
-            </a>
+            </div>
           </Link>
           
           {/* Theme toggle */}
@@ -169,6 +169,27 @@ export default function Header() {
           <SearchBar onSearch={handleSearch} />
         </div>
       )}
+      
+      {/* Delete Account Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All your data and preferences will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteAccount}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
 }
