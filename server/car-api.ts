@@ -72,7 +72,7 @@ export async function getCarBrands(): Promise<string[]> {
   } catch (error) {
     log(`Failed to fetch car brands: ${(error as Error).message}`, 'car-api');
     // Provide fallback brands if API fails
-    return ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla'];
+    return ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Nissan', 'Suzuki', 'Hyundai', 'Kia', 'Chevrolet', 'Lexus', 'Acura'];
   }
 }
 
@@ -85,13 +85,20 @@ export async function getCarModels(make: string): Promise<string[]> {
     log(`Failed to fetch car models: ${(error as Error).message}`, 'car-api');
     // Provide some fallback models if API fails
     const fallbackModels = {
-      'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander'],
-      'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot'],
-      'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang'],
-      'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
-      'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class'],
-      'Audi': ['A4', 'A6', 'Q5', 'Q7'],
-      'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y']
+      'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Supra', 'Land Cruiser', 'Yaris'],
+      'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Fit', 'HR-V', 'Odyssey'],
+      'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang', 'Focus', 'Ranger', 'Bronco'],
+      'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3', 'M5', 'i8'],
+      'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class', 'AMG GT', 'G-Wagon', 'EQS'],
+      'Audi': ['A4', 'A6', 'Q5', 'Q7', 'R8', 'e-tron', 'TT'],
+      'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck', 'Roadster'],
+      'Nissan': ['Altima', 'Maxima', 'Rogue', 'Pathfinder', 'GTR', '370Z', 'Leaf'],
+      'Suzuki': ['Swift', 'Vitara', 'Jimny', 'S-Cross', 'Ignis', 'Baleno'],
+      'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona'],
+      'Kia': ['Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride', 'Soul'],
+      'Chevrolet': ['Malibu', 'Impala', 'Equinox', 'Tahoe', 'Silverado', 'Corvette', 'Camaro'],
+      'Lexus': ['ES', 'IS', 'RX', 'GX', 'LX', 'LC', 'LS'],
+      'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX']
     };
     return fallbackModels[make as keyof typeof fallbackModels] || [];
   }
@@ -131,8 +138,26 @@ function mapApiCarToCar(apiCar: any, index: number): Car {
     seatingCapacity = 2;
   }
   
-  // Generate image URL based on car make and model
-  const imageUrl = `https://source.unsplash.com/800x600/?car,${apiCar.make},${apiCar.model}`;
+  // Generate a reliable image URL based on car make and model
+  // Using specific images that are more reliable than random unsplash searches
+  const imageUrls = {
+    'Toyota': 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg',
+    'Honda': 'https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg',
+    'Ford': 'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg',
+    'BMW': 'https://images.pexels.com/photos/100656/pexels-photo-100656.jpeg',
+    'Mercedes': 'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
+    'Audi': 'https://images.pexels.com/photos/244206/pexels-photo-244206.jpeg',
+    'Tesla': 'https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg',
+    'Nissan': 'https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg',
+    'Suzuki': 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg',
+    'Hyundai': 'https://images.pexels.com/photos/627678/pexels-photo-627678.jpeg',
+    'Kia': 'https://images.pexels.com/photos/1035108/pexels-photo-1035108.jpeg',
+    'Chevrolet': 'https://images.pexels.com/photos/337909/pexels-photo-337909.jpeg',
+    'Lexus': 'https://images.pexels.com/photos/248687/pexels-photo-248687.jpeg',
+    'Acura': 'https://images.pexels.com/photos/248747/pexels-photo-248747.jpeg'
+  };
+  
+  const imageUrl = imageUrls[apiCar.make as keyof typeof imageUrls] || 'https://images.pexels.com/photos/3166786/pexels-photo-3166786.jpeg';
   
   return {
     id: (index + 1),
@@ -228,26 +253,33 @@ export async function searchCars(params: {
       log(`Error fetching from real API, using fallback data: ${(error as Error).message}`, 'car-api');
       
       // If the API call fails, use some fallback data
-      const popularBrands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla'];
+      const popularBrands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Audi', 'Tesla', 'Nissan', 'Suzuki'];
       const brandsToFetch = brands && brands.length > 0 ? brands : popularBrands;
       
       // Generate some fallback cars for demo purposes
-      for (const brand of brandsToFetch.slice(0, 3)) {
-        // Use our fallback models
+      for (const brand of brandsToFetch) {
+        // Use our fallback models - expanded to include more models like Swift and GTR
         const fallbackModels = {
-          'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander'],
-          'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot'],
-          'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang'],
-          'BMW': ['3 Series', '5 Series', 'X3', 'X5'],
-          'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class'],
-          'Audi': ['A4', 'A6', 'Q5', 'Q7'],
-          'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y']
+          'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Supra', 'Land Cruiser', 'Yaris'],
+          'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Fit', 'HR-V', 'Odyssey'],
+          'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang', 'Focus', 'Ranger', 'Bronco'],
+          'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3', 'M5', 'i8'],
+          'Mercedes': ['C-Class', 'E-Class', 'GLC', 'S-Class', 'AMG GT', 'G-Wagon', 'EQS'],
+          'Audi': ['A4', 'A6', 'Q5', 'Q7', 'R8', 'e-tron', 'TT'],
+          'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck', 'Roadster'],
+          'Nissan': ['Altima', 'Maxima', 'Rogue', 'Pathfinder', 'GTR', '370Z', 'Leaf'],
+          'Suzuki': ['Swift', 'Vitara', 'Jimny', 'S-Cross', 'Ignis', 'Baleno'],
+          'Hyundai': ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona'],
+          'Kia': ['Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride', 'Soul'],
+          'Chevrolet': ['Malibu', 'Impala', 'Equinox', 'Tahoe', 'Silverado', 'Corvette', 'Camaro'],
+          'Lexus': ['ES', 'IS', 'RX', 'GX', 'LX', 'LC', 'LS'],
+          'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX']
         };
         
         const models = fallbackModels[brand as keyof typeof fallbackModels] || [];
         
-        // For each brand, add models
-        for (const model of models.slice(0, 3)) {
+        // For each brand, add models - include more models for variety
+        for (const model of models) {
           // Current year and previous year
           const currentYear = new Date().getFullYear();
           const years = [currentYear, currentYear - 1, currentYear - 2];
@@ -269,11 +301,50 @@ export async function searchCars(params: {
     
     // Apply text search if query is provided
     if (query) {
-      const searchTerms = query.toLowerCase().split(' ');
+      const searchTerm = query.toLowerCase().trim();
       filteredCars = filteredCars.filter(car => {
-        const carText = `${car.brand} ${car.model} ${car.year} ${car.bodyType || ''} ${car.fuelType}`.toLowerCase();
-        return searchTerms.every(term => carText.includes(term));
+        const brand = car.brand.toLowerCase();
+        const model = car.model.toLowerCase();
+        const bodyType = (car.bodyType || '').toLowerCase();
+        const fuelType = car.fuelType.toLowerCase();
+        const yearStr = car.year.toString();
+        
+        // Check if any specific field contains the search term
+        return (
+          brand.includes(searchTerm) || 
+          model.includes(searchTerm) || 
+          bodyType.includes(searchTerm) || 
+          fuelType.includes(searchTerm) ||
+          yearStr.includes(searchTerm) ||
+          // Also check combined text for multi-word searches
+          `${brand} ${model}`.includes(searchTerm)
+        );
       });
+      
+      // If no results, try for specific models across all brands
+      if (filteredCars.length === 0) {
+        // Handle special case searches for specific models
+        const specificModels: Record<string, string> = {
+          'gtr': 'Nissan GTR',
+          'swift': 'Suzuki Swift',
+          'skyline': 'Nissan GTR',
+          'mustang': 'Ford Mustang',
+          'camaro': 'Chevrolet Camaro',
+          'corvette': 'Chevrolet Corvette',
+          'civic': 'Honda Civic',
+          'corolla': 'Toyota Corolla'
+        };
+        
+        if (specificModels[searchTerm]) {
+          const [specificBrand, specificModel] = specificModels[searchTerm].split(' ');
+          
+          // Check all cars for the specific brand and model
+          filteredCars = cars.filter(car => 
+            car.brand.toLowerCase() === specificBrand.toLowerCase() && 
+            car.model.toLowerCase().includes(specificModel.toLowerCase())
+          );
+        }
+      }
     }
     
     // Filter by brands if multiple brands are selected
